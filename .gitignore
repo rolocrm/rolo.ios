@@ -1,0 +1,129 @@
+########################
+# macOS
+########################
+
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+########################
+# Xcode
+########################
+
+# Build output
+build/
+DerivedData/
+
+# User-specific Xcode settings
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+
+# Misc Xcode stuff
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+*.xcuserstate
+*.xcworkspace.bak
+
+# Diagnostics
+**.memgraph
+*.xcdiagnose
+*.xcresult
+
+########################
+# Swift / iOS artefacts
+########################
+
+*.hmap
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+########################
+# Swift Package Manager
+########################
+
+.build/
+
+# Если не хочешь коммитить зависимости SPM — раскомментируй:
+# Packages/
+# Package.pins
+# Package.resolved
+# .swiftpm/
+
+########################
+# CocoaPods
+########################
+
+# По умолчанию Pods оставляем версионируемыми.
+# Если хочешь исключить Pods — раскомментируй:
+# Pods/
+
+# Если не хочешь коммитить workspace, созданный CocoaPods:
+# *.xcworkspace
+
+########################
+# Carthage
+########################
+
+# Carthage/Checkouts/
+Carthage/Build/
+
+########################
+# Accio
+########################
+
+Dependencies/
+.accio/
+
+########################
+# fastlane
+########################
+
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+fastlane/*.env
+
+########################
+# Code Injection
+########################
+
+iOSInjectionProject/
+
+########################
+# Editor / tooling
+########################
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+########################
+# Secrets / env
+########################
+
+.env
+.env.*
