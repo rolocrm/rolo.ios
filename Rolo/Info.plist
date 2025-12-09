@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>EBGaramond-Italic-VariableFont_wght.ttf</string>
+		<string>EBGaramond-VariableFont_wght.ttf</string>
+		<string>Figtree-VariableFont_wght.ttf</string>
+		<string>Figtree-Italic-VariableFont_wght.ttf</string>
+	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your photo library to set your profile picture.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to your camera to take a profile picture.</string>
+	<key>GIDClientID</key>
+	<string>880195735821-5qdbec3eua4pcvkho6gvi35ao2do3gtc.apps.googleusercontent.com</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.880195735821-5qdbec3eua4pcvkho6gvi35ao2do3gtc</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
