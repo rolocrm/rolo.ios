@@ -97,12 +97,19 @@ class CommunityService {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = HTTPMethod.get.rawValue
         urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
-        let (data, _) = try await URLSession.shared.data(for: urlRequest)
-        let response = try JSONDecoder().decode(CheckHandleResponse.self, from: data)
-        print("Check handle response:", response)
-        
-        return response
+
+        do {
+            let (data, _) = try await URLSession.shared.data(for: urlRequest)
+            let jsonString = String(data: data, encoding: .utf8) ?? "<non-utf8 data>"
+            print("Check handle raw JSON:", jsonString)
+
+            let response = try JSONDecoder().decode(CheckHandleResponse.self, from: data)
+            print("Check handle response:", response)
+            return response
+        } catch {
+            print("CommunityService | checkHandle() | error= \(error)")
+            throw error
+        }
     }
     
     func getRoles(token: String) async throws -> GetRolesResponse {
