@@ -4,8 +4,11 @@ struct MembersView: View {
     @StateObject private var viewModel = MembersViewModel()
     @State var searchText: String = ""
 
+    @State var showAddMemberScreen: Bool = false
+    @State var memberDeatilId: UUID? = nil
+
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 headerSection()
                 searchBar()
@@ -15,7 +18,7 @@ struct MembersView: View {
                     LazyVStack(spacing: 0) {
                         ForEach(viewModel.filteredMembers.enumerated(), id: \.element.id) { (index, item) in
                             MemberLineView(member: item)
-//                            memberLine(item: item)
+                            //                            memberLine(item: item)
 
                             if index < viewModel.filteredMembers.count - 1 {
                                 Rectangle()
@@ -28,9 +31,13 @@ struct MembersView: View {
                 .padding(.top, 32)
             }
             .background(Color.white)
+            .navigationDestination(isPresented: $showAddMemberScreen) {
+                AddMemberView(memberDetailID: memberDeatilId ?? UUID())
+            }
         }
     }
 
+    // MARK: - customLists
     private func customLists() -> some View {
         HStack(spacing: 8) {
             Button(action: {
@@ -52,6 +59,7 @@ struct MembersView: View {
         .padding(.horizontal, 16)
     }
 
+    // MARK: - MembersListsTag
     private func customMembersListsTag(listName: String, chosed: Bool, icon: String? = nil) -> some View {
         HStack(spacing: 4) {
             Text(listName)
@@ -72,6 +80,7 @@ struct MembersView: View {
         )
     }
 
+    // MARK: - headerSection
     private func headerSection() -> some View {
         HStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
@@ -89,6 +98,8 @@ struct MembersView: View {
             HStack(spacing: 0) {
                 Button(action: {
                     print("Add member")
+                    memberDeatilId = UUID()
+                    showAddMemberScreen = true
                 }, label: {
                     ZStack {
                         Circle()
@@ -115,6 +126,7 @@ struct MembersView: View {
         .padding(.horizontal, 16)
     }
 
+    // MARK: - searchBar
     private func searchBar() -> some View {
         Group {
             HStack {
