@@ -1,13 +1,18 @@
 import SwiftUI
+import SwiftData
 
 struct WelcomeView: View {
     @StateObject private var viewModel = WelcomeViewModel()
+    @Bindable var user: UserProfile
 
-    var firstName: String = "firstName"
-    var profileImage: UIImage? = nil
     let onNavigateToCreateCommunity: () -> Void
     let onNavigateToJoinCommunity: () -> Void
     let onNavigateToLogin: () -> Void
+
+    var uiImage: UIImage? {
+        guard let imageData = user.imageData else { return nil }
+        return UIImage(data: imageData)
+    }
 
     var body: some View {
         ZStack {
@@ -43,8 +48,10 @@ struct WelcomeView: View {
 }
 
 #Preview {
+    // Create a lightweight preview user
+    let previewUser = UserProfile(id: UUID().uuidString, email: "testemail", name: "testName", lastname: "testLastname", phone: "+1111", imageStringURL: nil, uiImage: nil, type: nil, createdAt: nil, communities: nil, collaborators: nil)
     WelcomeView(
-        firstName: "Alex",
+        user: previewUser,
         onNavigateToCreateCommunity: {},
         onNavigateToJoinCommunity: {},
         onNavigateToLogin: {}
@@ -61,8 +68,8 @@ private extension WelcomeView {
         .frame(maxWidth: .infinity)
         .overlay(alignment: .trailing) {
             Group {
-                if let profileImage = profileImage {
-                    Image(uiImage: profileImage)
+                if let uiImage {
+                    Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 40, height: 40)
@@ -73,6 +80,9 @@ private extension WelcomeView {
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 40, height: 40)
                         .clipShape(Circle())
+                        .onTapGesture {
+                            onNavigateToLogin()
+                        }
                 }
             }
         }
@@ -81,7 +91,7 @@ private extension WelcomeView {
     
     func greetingSection() -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Welcome \(firstName)!")
+            Text("Welcome \(user.name ?? "")!")
                 .font(.figtreeBold(size: 28))
                 .foregroundColor(.textPrimary)
             Text("Before you can manage members, events, or donations, you’ll need to join or create your community.")

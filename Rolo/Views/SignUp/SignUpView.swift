@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct SignUpView: View {
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel = SignUpViewModel()
     let onNavigateToProfile: () -> Void
-    let onNavigateToHome: (String, UIImage?) -> Void
-    let onNavigateToWelcome: (String, UIImage?) -> Void
+    let onNavigateToHome: () -> Void
+    let onNavigateToWelcome: () -> Void
     let onNavigateBack: () -> Void
 
     var body: some View {
@@ -29,10 +30,22 @@ struct SignUpView: View {
         .onChange(of: viewModel.navigationState) { state in
             if case .profile = state {
                 onNavigateToProfile()
-            } else if case .home(let firstName, let profileImage) = state {
-                onNavigateToHome(firstName, profileImage)
-            } else if case .welcome(let firstName, let profileImage) = state {
-                onNavigateToWelcome(firstName, profileImage)
+            } else if case .home(let userProfile) = state {
+                modelContext.insert(userProfile)
+                do {
+                    try modelContext.save()
+                } catch {
+                    print("SwiftData save error:", error)
+                }
+                onNavigateToHome()
+            } else if case .welcome(let userProfile) = state {
+                modelContext.insert(userProfile)
+                do {
+                    try modelContext.save()
+                } catch {
+                    print("SwiftData save error:", error)
+                }
+                onNavigateToWelcome()
             }
         }
     }
@@ -145,11 +158,11 @@ struct SignUpView: View {
  
 }
 
-#Preview {
-    SignUpView(
-        onNavigateToProfile: {}, 
-        onNavigateToHome: { _, _ in }, 
-        onNavigateToWelcome: { _, _ in },
-        onNavigateBack: {}
-    )
-}
+//#Preview {
+//    SignUpView(
+//        onNavigateToProfile: {}, 
+//        onNavigateToHome: { _, _ in }, 
+//        onNavigateToWelcome: { _, _ in },
+//        onNavigateBack: {}
+//    )
+//}

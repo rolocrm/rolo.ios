@@ -27,6 +27,7 @@ class CreateCommunityViewModel: ObservableObject {
     @Published var collaborators: [Collaborator] = []
     @Published var isLoading = false
     @Published var errorMessage = ""
+    @Published var newUserProfile: UserProfile?
     @Published var isCommunityCreated = false
     @Published var showImagePicker = false
     @Published var isHandleValidating = false
@@ -38,6 +39,8 @@ class CreateCommunityViewModel: ObservableObject {
     @Published var logoUrl: String?
     private var handleValidationTask: Task<Void, Never>?
 
+    private let userService: UserService
+
     let countryOptions = [
         "United States", "Canada", "United Kingdom", "Australia", "Germany",
         "France", "Spain", "Italy", "Japan", "China", "India", "Brazil",
@@ -45,6 +48,7 @@ class CreateCommunityViewModel: ObservableObject {
     ]
 
     init() {
+        self.userService = UserService.shared
         loadRoles()
     }
 
@@ -134,10 +138,17 @@ class CreateCommunityViewModel: ObservableObject {
                         print("Skipping invalid collaborator:", collaborator)
                     }
                 }
-                
-                await MainActor.run {
-                    self.isLoading = false
-                    self.isCommunityCreated = true
+
+                do {
+                    let userProfile = try await userService.getProfile(token: token)
+                    print("userProfile= \(userProfile)")
+                    await MainActor.run {
+                        isLoading = false
+                        self.isCommunityCreated = true
+                        newUserProfile = userProfile
+                    }
+                } catch {
+                    print("CreateCommunityViewModel | Unable to get new Profile after community creation | error= \(error)")
                 }
             } catch {
                 print("Create community error:", error)

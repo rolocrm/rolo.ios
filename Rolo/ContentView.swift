@@ -1,11 +1,15 @@
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
     @State private var currentView: AppView = .login
-    @State private var userFirstName: String = "firstName"
-    @State private var userProfileImage: UIImage? = nil
+//    @State private var userFirstName: String = "firstName"
+//    @State private var userProfileImage: UIImage? = nil
     @State private var isCheckingAuth = true
+
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \UserProfile.id) private var users: [UserProfile]
 
     enum AppView {
         case login
@@ -19,123 +23,125 @@ struct ContentView: View {
     }
 
     var body: some View {
-        Group {
-            if isCheckingAuth {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-            } else {
-                switch currentView {
-                case .login:
-                    LoginView(
-                        onNavigateToSignUp: {
-                            currentView = .signup
-                        },
-                        onNavigateToCreateCommunity: {
-                            currentView = .createCommunity
-                        },
-                        onNavigateToJoinCommunity: {
-                            currentView = .joinCommunity
-                        },
-                        onNavigateToProfile: {
-                            currentView = .profile
-                        },
-                        onNavigateToHome: { firstName, profileImage in
-                            userFirstName = firstName
-                            userProfileImage = profileImage
-                            currentView = .home
-                        },
-                        onNavigateToWelcome: { firstName, profileImage in
-                            userFirstName = firstName
-                            userProfileImage = profileImage
-                            currentView = .welcome
-                        }
-                    )
-                case .signup:
-                    SignUpView(
-                        onNavigateToProfile: {
-                            currentView = .profile
-                        },
-                        onNavigateToHome: { firstName, profileImage in
-                            userFirstName = firstName
-                            userProfileImage = profileImage
-                            currentView = .home
-                        },
-                        onNavigateToWelcome: { firstName, profileImage in
-                            userFirstName = firstName
-                            userProfileImage = profileImage
-                            currentView = .welcome
-                        },
-                        onNavigateBack: {
-                            currentView = .login
-                        }
-                    )
-                case .profile:
-                    ProfileView(
-                        onNavigateToHome: { firstName, profileImage in
-                            userFirstName = firstName
-                            userProfileImage = profileImage
-                            currentView = .home
-                        },
-                        onNavigateBack: {
-                            currentView = .signup
-                        }
-                    )
-                case .welcome:
-                    WelcomeView(
-                        firstName: userFirstName,
-                        profileImage: userProfileImage,
-                        onNavigateToCreateCommunity: {
-                            currentView = .createCommunity
-                        },
-                        onNavigateToJoinCommunity: {
-                            currentView = .joinCommunity
-                        },
-                        onNavigateToLogin: {
-                            currentView = .login
-                        }
-                    )
-                case .home:
-                    HomeView(onNavigateToLogin: {
-                        currentView = .login
-                    })
-                case .createCommunity:
-                    CreateCommunityView(
-                        onNavigateBack: {
-                            currentView = .home
-                        },
-                        onCommunityCreated: {
-                            currentView = .getStarted
-                        }
-                    )
-                case .joinCommunity:
-                    JoinCommunityView(
-                        onNavigateBack: {
-                            currentView = .home
-                        }
-                    )
-                case .getStarted:
-                    GetStartedView(
-                        firstName: userFirstName,
-                        profileImage: userProfileImage,
-                        onSkip: {
-                            currentView = .home
-                        },
-                        onAddMembers: {
+//        VStack {
+            Group {
+                if isCheckingAuth {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                } else {
+                    switch currentView {
+                        case .login:
+                            LoginView(
+                                onNavigateToSignUp: {
+                                    currentView = .signup
+                                },
+                                onNavigateToProfile: {
+                                    currentView = .profile
+                                },
+                                onNavigateToHome: {
+                                    currentView = .home
+                                },
+                                onNavigateToWelcome: {
+                                    currentView = .welcome
+                                }
+                            )
+                        case .signup:
+                            SignUpView(
+                                onNavigateToProfile: {
+                                    currentView = .profile
+                                },
+                                onNavigateToHome: {
+                                    currentView = .home
+                                },
+                                onNavigateToWelcome: {
+                                    currentView = .welcome
+                                },
+                                onNavigateBack: {
+                                    currentView = .login
+                                }
+                            )
 
-                        },
-                        onConnectStripe: {
+                        case .profile:
+                            ProfileView(
+                                onNavigateToWelcome: {
+                                    currentView = .welcome
+                                },
+                                onNavigateBack: {
+                                    currentView = .signup
+                                }
+                            )
 
-                        },
-                        onIntegrateGoogleCalendar: {
 
-                        }
-                    )
+                        case .welcome:
+                            if let user = users.first {
+                                WelcomeView(
+                                    user: user,
+                                    onNavigateToCreateCommunity: {
+                                        currentView = .createCommunity
+                                    },
+                                    onNavigateToJoinCommunity: {
+                                        currentView = .joinCommunity
+                                    },
+                                    onNavigateToLogin: {
+                                        currentView = .profile
+                                    }
+                                )
+                            }
+                        case .createCommunity:
+                            if let user = users.first {
+                                CreateCommunityView(
+                                    user: user,
+                                    onNavigateBack: {
+                                        currentView = .welcome
+                                    },
+                                    onCommunityCreated: {
+                                        currentView = .getStarted
+                                    }
+                                )
+                            }
+
+                        case .home:
+                            HomeView(onNavigateToLogin: {
+                                currentView = .login
+                            })
+                        default:
+                            VStack {
+                                Text("currentView= \(currentView)")
+                                if let user = users.first {
+                                    Text("user= \(user)")
+                                }
+                            }
+
+                            //                case .joinCommunity:
+                            //                    JoinCommunityView(
+                            //                        onNavigateBack: {
+                            //                            currentView = .home
+                            //                        }
+                            //                    )
+                            //                case .getStarted:
+                            //                    GetStartedView(
+                            //                        firstName: userFirstName,
+                            //                        profileImage: userProfileImage,
+                            //                        onSkip: {
+                            //                            currentView = .home
+                            //                        },
+                            //                        onAddMembers: {
+                            //
+                            //                        },
+                            //                        onConnectStripe: {
+                            //
+                            //                        },
+                            //                        onIntegrateGoogleCalendar: {
+                            //
+                            //                        }
+                            //                    )
+                    }
                 }
             }
-        }
-        .task {
-            await checkAuthStatus()
-        }
+            .task {
+                await checkAuthStatus()
+            }
+//        }
     }
 
     func checkAuthStatus() async {
@@ -145,23 +151,47 @@ struct ContentView: View {
             isCheckingAuth = false
             return
         }
-    
+
         print("Token found in keychain, fetching profile")
+
+        var profile: UserProfile?
         do {
-            let profile = try await UserService.shared.getProfile(token: token)
+            let profileTemp = try await UserService.shared.getProfile(token: token)
+            profile = profileTemp
+            modelContext.insert(profileTemp)
+            do {
+                try modelContext.save()
+            } catch {
+                print("SwiftData save error:", error)
+            }
+        } catch {
+            if let user = users.first {
+                profile = user
+            }
+        }
+
+        guard let profile else {
+            print("No Users found")
+            isCheckingAuth = false
+            KeychainManager.shared.deleteToken()
+            return
+        }
+
+        do {
+            print("ContentView() | Profile | profile= \(profile)")
 
             if profile.name == nil || profile.lastname == nil {
                 print("Profile incomplete, navigating to ProfileView")
                 currentView = .profile
             } else {
                 print("Profile complete, checking communities")
-                userFirstName = profile.name ?? "User"
-                if let imageUrl = profile.image, let url = URL(string: imageUrl) {
-                    print("Downloading profile image from:", imageUrl)
+                if let imageStringURL = profile.imageStringURL,
+                   let url = URL(string: imageStringURL) {
+                    print("Downloading profile image from:", imageStringURL)
                     let (data, _) = try await URLSession.shared.data(from: url)
-                    userProfileImage = UIImage(data: data)
+                    profile.imageData = data
                 }
-                
+
                 // Check if user has communities
                 if let communities = profile.communities, !communities.isEmpty {
                     print("User has \(communities.count) communities, navigating to HomeView")
@@ -174,6 +204,7 @@ struct ContentView: View {
         } catch {
             print("Failed to fetch profile on launch:", error.localizedDescription)
             KeychainManager.shared.deleteToken()
+            // Delete user form SwiftUI
         }
 
         isCheckingAuth = false

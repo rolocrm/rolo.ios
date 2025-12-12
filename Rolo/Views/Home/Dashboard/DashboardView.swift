@@ -1,8 +1,11 @@
 import SwiftUI
+import SwiftData
 
 struct DashboardView: View {
     @StateObject private var viewModel = DashboardViewModel()
-    
+//    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \UserProfile.id) private var users: [UserProfile]
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -51,6 +54,11 @@ struct DashboardView: View {
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 20)
+
+            Text("users count= \(users.count)")
+            if let user = users.first {
+                Text("user= \(user)")
+            }
         }
     }
 }

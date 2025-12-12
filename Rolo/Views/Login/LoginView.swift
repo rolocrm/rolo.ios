@@ -3,14 +3,13 @@
 import SwiftUI
 
 struct LoginView: View {
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel = LoginViewModel()
     @State private var showForgotPassword = false
     let onNavigateToSignUp: () -> Void
-    let onNavigateToCreateCommunity: () -> Void
-    let onNavigateToJoinCommunity: () -> Void
     let onNavigateToProfile: () -> Void
-    let onNavigateToHome: (String, UIImage?) -> Void
-    let onNavigateToWelcome: (String, UIImage?) -> Void
+    let onNavigateToHome: () -> Void
+    let onNavigateToWelcome: () -> Void
 
     var body: some View {
         Group {
@@ -41,12 +40,24 @@ struct LoginView: View {
             }
         }
         .onChange(of: viewModel.navigationState) { state in
-            if case .profile = state {
+            if state == .profile {
                 onNavigateToProfile()
-            } else if case .home(let firstName, let profileImage) = state {
-                onNavigateToHome(firstName, profileImage)
-            } else if case .welcome(let firstName, let profileImage) = state {
-                onNavigateToWelcome(firstName, profileImage)
+            } else if case .home(let userProfile) = state {
+                modelContext.insert(userProfile)
+                do {
+                    try modelContext.save()
+                } catch {
+                    print("SwiftData save error:", error)
+                }
+                onNavigateToHome()
+            } else if case .welcome(let userProfile) = state {
+                modelContext.insert(userProfile)
+                do {
+                    try modelContext.save()
+                } catch {
+                    print("SwiftData save error:", error)
+                }
+                onNavigateToWelcome()
             }
         }
     }

@@ -2,8 +2,9 @@ import SwiftUI
 import PhotosUI
 
 struct ProfileView: View {
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel = ProfileViewModel()
-    let onNavigateToHome: (String, UIImage?) -> Void
+    let onNavigateToWelcome: () -> Void
     let onNavigateBack: () -> Void
 
     var body: some View {
@@ -22,9 +23,16 @@ struct ProfileView: View {
             }
             .padding(.horizontal, 20)
         }
-        .onChange(of: viewModel.isProfileCreated) { isCreated in
-            if isCreated {
-                onNavigateToHome(viewModel.firstName, viewModel.selectedImage)
+        .onChange(of: viewModel.isProfileCreated) { newProfile in
+            if let newProfile {
+                print("Profile View | profile created= \(newProfile)")
+                modelContext.insert(newProfile)
+                do {
+                    try modelContext.save()
+                } catch {
+                    print("SwiftData save error:", error)
+                }
+                onNavigateToWelcome()
             }
         }
         .actionSheet(isPresented: $viewModel.showingActionSheet) {
@@ -253,3 +261,11 @@ struct CameraPicker: UIViewControllerRepresentable {
     }
 }
 
+//#Preview {
+//    SignUpView(
+//        onNavigateToProfile: {},
+//        onNavigateToHome: { _, _ in },
+//        onNavigateToWelcome: { _, _ in },
+//        onNavigateBack: {}
+//    )
+//}

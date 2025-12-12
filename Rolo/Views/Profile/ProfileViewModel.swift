@@ -7,7 +7,7 @@ class ProfileViewModel: ObservableObject {
     @Published var phoneNumber = ""
     @Published var isLoading = false
     @Published var errorMessage = ""
-    @Published var isProfileCreated = false
+    @Published var isProfileCreated: UserProfile?
     @Published var selectedImage: UIImage?
     @Published var showingImagePicker = false
     @Published var showingCamera = false
@@ -47,9 +47,10 @@ class ProfileViewModel: ObservableObject {
             return
         }
 
+        isLoading = true
+        errorMessage = ""
+
         Task {
-            isLoading = true
-            errorMessage = ""
             print("Creating profile with name:", firstName, "lastName:", lastName, "phone:", phoneNumber)
 
             do {
@@ -71,10 +72,15 @@ class ProfileViewModel: ObservableObject {
                     phone: phoneNumber
                 )
 
-                await MainActor.run {
-                    print("Profile created successfully")
-                    isLoading = false
-                    isProfileCreated = true
+                print("Profile created successfully")
+                do {
+                    let userProfile = try await userService.getProfile(token: token)
+                    await MainActor.run {
+                        isLoading = false
+                        isProfileCreated = userProfile
+                    }
+                } catch {
+                    print("ProfileViewModel | Unable to get new Profile after creation")
                 }
             } catch {
                 await MainActor.run {
@@ -87,7 +93,7 @@ class ProfileViewModel: ObservableObject {
     }
 
     func goBack() {
-        isProfileCreated = false
+        isProfileCreated = nil
     }
 
     func showImagePicker() {

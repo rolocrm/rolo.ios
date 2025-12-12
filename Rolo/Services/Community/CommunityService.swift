@@ -33,7 +33,7 @@ struct CreateCommunityResponse: Codable {
 
 struct CheckHandleResponse: Codable {
     let exists: Bool
-    let message: String
+    let available: Bool
 }
 
 struct GetRolesResponse: Codable {

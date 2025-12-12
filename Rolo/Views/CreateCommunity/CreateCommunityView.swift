@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct CreateCommunityView: View {
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel = CreateCommunityViewModel()
     @State private var showEmailAnnotation = false
+    @Bindable var user: UserProfile
     let onNavigateBack: () -> Void
     let onCommunityCreated: () -> Void
     
@@ -25,7 +27,13 @@ struct CreateCommunityView: View {
             }
         }
         .onChange(of: viewModel.isCommunityCreated) { isCreated in
-            if isCreated {
+            if let newUserProfile = viewModel.newUserProfile, isCreated {
+                modelContext.insert(newUserProfile)
+                do {
+                    try modelContext.save()
+                } catch {
+                    print("SwiftData save error:", error)
+                }
                 onCommunityCreated()
             }
         }
@@ -417,9 +425,9 @@ struct CreateCommunityView: View {
     }
 }
 
-#Preview {
-    CreateCommunityView(onNavigateBack: {}, onCommunityCreated: {})
-}
+//#Preview {
+//    CreateCommunityView(onNavigateBack: {}, onCommunityCreated: {})
+//}
 
 struct TooltipView: View {
     var body: some View {

@@ -4,21 +4,21 @@ import Foundation
 enum SignUpNavigationState: Equatable {
     case none
     case profile
-    case home(firstName: String, profileImage: UIImage?)
-    case welcome(firstName: String, profileImage: UIImage?)
+    case home(userProfile: UserProfile)
+    case welcome(userProfile: UserProfile)
 
-    static func == (lhs: SignUpNavigationState, rhs: SignUpNavigationState) -> Bool {
-        switch (lhs, rhs) {
-        case (.none, .none), (.profile, .profile):
-            return true
-        case (.home(let lhsName, _), .home(let rhsName, _)):
-            return lhsName == rhsName
-        case (.welcome(let lhsName, _), .welcome(let rhsName, _)):
-            return lhsName == rhsName
-        default:
-            return false
-        }
-    }
+//    static func == (lhs: SignUpNavigationState, rhs: SignUpNavigationState) -> Bool {
+//        switch (lhs, rhs) {
+//        case (.none, .none), (.profile, .profile):
+//            return true
+//        case (.home(let lhsName, _), .home(let rhsName, _)):
+//            return lhsName == rhsName
+//        case (.welcome(let lhsName, _), .welcome(let rhsName, _)):
+//            return lhsName == rhsName
+//        default:
+//            return false
+//        }
+//    }
 }
 
 @MainActor
@@ -104,22 +104,19 @@ class SignUpViewModel: ObservableObject {
             print("Profile created, fetching profile and checking communities")
             do {
                 let profile = try await UserService.shared.getProfile(token: token)
-                let firstName = profile.name ?? "User"
-                var profileImage: UIImage?
-
-                if let imageUrl = profile.image, let url = URL(string: imageUrl) {
-                    print("Downloading profile image from:", imageUrl)
+                if let imageStringURL = profile.imageStringURL, let url = URL(string: imageStringURL) {
+                    print("Downloading profile image from:", imageStringURL)
                     let (data, _) = try await URLSession.shared.data(from: url)
-                    profileImage = UIImage(data: data)
+                    profile.imageData = data
                 }
 
                 // Check if user has communities (same logic as ContentView and LoginView)
                 if let communities = profile.communities, !communities.isEmpty {
                     print("User has \(communities.count) communities, navigating to HomeView")
-                    navigationState = .home(firstName: firstName, profileImage: profileImage)
+                    navigationState = .home(userProfile: profile)
                 } else {
                     print("User has no communities, navigating to WelcomeView")
-                    navigationState = .welcome(firstName: firstName, profileImage: profileImage)
+                    navigationState = .welcome(userProfile: profile)
                 }
             } catch {
                 print("Failed to load profile after signup:", error.localizedDescription)
