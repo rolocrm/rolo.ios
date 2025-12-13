@@ -37,6 +37,8 @@ struct AddMemberView: View {
                     personalInfoMemberInfoSection()
                     addressMemberInfoSection()
                     religiousMemberInfoSection()
+                    socialMediaMemberInfoSection()
+                    notesMemberInfoSection()
                 }
 
                 Spacer()
@@ -139,10 +141,33 @@ struct AddMemberView: View {
                 .fill(Color.neutralLightGray)
         )
     }
-    // MARK: - addressoMemberInfoSection
+
+    // MARK: - religiousMemberInfoSection
     private func religiousMemberInfoSection() -> some View {
         VStack(spacing: 0) {
             MemberDetailReligiousInfo()
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.neutralLightGray)
+        )
+    }
+
+    // MARK: - socialMediaMemberInfoSection
+    private func socialMediaMemberInfoSection() -> some View {
+        VStack(spacing: 0) {
+            MemberDetailSocialMedia()
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.neutralLightGray)
+        )
+    }
+
+    // MARK: - notesMemberInfoSection
+    private func notesMemberInfoSection() -> some View {
+        VStack(spacing: 0) {
+            MemberDetailNotes()
         }
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)

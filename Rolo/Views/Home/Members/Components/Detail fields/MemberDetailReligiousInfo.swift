@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MemberDetailReligiousInfo: View {
-    @State private var isOpen: Bool = true
+    @State private var isOpen: Bool = false
     @State private var religious: Religious = .jewish
     @State private var jewishLineage: JewishLineage = .yisroel
     @State private var hewbrewName: String = ""
