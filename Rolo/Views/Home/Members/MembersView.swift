@@ -6,35 +6,56 @@ struct MembersView: View {
 
     @State var showAddMemberScreen: Bool = false
     @State var memberDeatilId: UUID? = nil
+    @FocusState private var isSearchFiledFocused: Bool
 
     var body: some View {
-        NavigationStack {
+//        NavigationStack {
             VStack(spacing: 0) {
-                headerSection()
-                searchBar()
-                customLists()
+                if !isSearchFiledFocused {
+                    headerSection()
+                }
 
                 ScrollView(.vertical) {
                     LazyVStack(spacing: 0) {
-                        ForEach(viewModel.filteredMembers.enumerated(), id: \.element.id) { (index, item) in
-                            MemberLineView(member: item)
-                            //                            memberLine(item: item)
+//                        headerSection()
+                        searchBar()
+                        if !isSearchFiledFocused {
+                            customLists()
+                        }
+                    }
 
-                            if index < viewModel.filteredMembers.count - 1 {
-                                Rectangle()
-                                    .frame(height: 1)
-                                    .foregroundStyle(Color.neutralLightGray)
+                    LazyVStack(spacing: 0) {
+                        if isSearchFiledFocused && viewModel.filteredMembers.isEmpty {
+                            Text("No results found")
+                                .font(.figtree(size: 14))
+                                .foregroundColor(.neutralMediumGray)
+                                .padding(.top, 32)
+                        } else {
+                            ForEach(viewModel.filteredMembers.enumerated(), id: \.element.id) { (index, item) in
+                                MemberLineView(member: item)
+
+                                if index < viewModel.filteredMembers.count - 1 {
+                                    Rectangle()
+                                        .frame(height: 1)
+                                        .foregroundStyle(Color.neutralLightGray)
+                                }
                             }
                         }
                     }
+//                    .padding(.top, 32)
                 }
-                .padding(.top, 32)
+                .padding(.top, isSearchFiledFocused ? 0 : 32)
+//                .padding(.top, 32)
             }
+            .animation(.easeInOut(duration: 0.25), value: isSearchFiledFocused)
             .background(Color.white)
-            .navigationDestination(isPresented: $showAddMemberScreen) {
+//            .navigationDestination(isPresented: $showAddMemberScreen) {
+//                AddMemberView(memberDetailID: memberDeatilId ?? UUID())
+//            }
+            .sheet(isPresented: $showAddMemberScreen) {
                 AddMemberView(memberDetailID: memberDeatilId ?? UUID())
             }
-        }
+//        }
     }
 
     // MARK: - customLists
@@ -130,9 +151,20 @@ struct MembersView: View {
     private func searchBar() -> some View {
         Group {
             HStack {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 15, weight: .regular))
-                    .foregroundColor(.neutralDarkGray)
+                if isSearchFiledFocused {
+                    Button(action: {
+                        isSearchFiledFocused = false
+                        searchText = ""
+                    }, label: {
+                        Image(systemName: "arrow.left")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundColor(.neutralBlack)
+                    })
+                } else {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 15, weight: .regular))
+                        .foregroundColor(.neutralDarkGray)
+                }
 
                 TextField(
                     text: $searchText,
@@ -145,6 +177,7 @@ struct MembersView: View {
                 .disableAutocorrection(true)
                 .font(.figtreeMedium(size: 14))
                 .foregroundColor(.neutralDarkGray)
+                .focused($isSearchFiledFocused)
                 .onChange(of: searchText) { newValue in
                     viewModel.filterMembers(searchText: newValue)
                 }
@@ -166,7 +199,7 @@ struct MembersView: View {
             )
         }
         .padding(.horizontal, 16)
-        .padding(.top, 32)
+//        .padding(.top, isSearchFiledFocused ? 0 : 32)
     }
 }
 

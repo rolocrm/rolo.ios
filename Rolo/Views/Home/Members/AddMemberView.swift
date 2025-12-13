@@ -34,6 +34,9 @@ struct AddMemberView: View {
                 VStack(spacing: 8) {
                     mainMemberInfoSection()
                     contactsMemberInfoSection()
+                    personalInfoMemberInfoSection()
+                    addressMemberInfoSection()
+                    religiousMemberInfoSection()
                 }
 
                 Spacer()
@@ -87,13 +90,15 @@ struct AddMemberView: View {
     // MARK: - mainMemberInfoSection
     private func mainMemberInfoSection() -> some View {
         VStack(spacing: 0) {
-            MemberDetailField(text: $member.name, title: "First name", isSeparatorNeed: true)
-            MemberDetailField(text: $member.surname, title: "Last name", isSeparatorNeed: true)
-            MemberDetailField(text: $member.nickname, title: "Nickname", isSeparatorNeed: false)
+            Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 0) {
+                MemberDetailFieldRow(text: $member.name, title: "First name", isSeparatorNeed: true)
+                MemberDetailFieldRow(text: $member.surname, title: "Last name", isSeparatorNeed: true)
+                MemberDetailFieldRow(text: $member.nickname, title: "Nickname", isSeparatorNeed: false)
+            }
         }
         .padding(.horizontal, 18)
         .background(
-            RoundedRectangle(cornerRadius: 30, style: .continuous)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(Color.neutralLightGray)
         )
     }
@@ -101,12 +106,46 @@ struct AddMemberView: View {
     // MARK: - contactsMemberInfoSection
     private func contactsMemberInfoSection() -> some View {
         VStack(spacing: 0) {
-            MemberDetailField(text: $member.phone, title: "Phone", isSeparatorNeed: true)
-            MemberDetailField(text: $member.email, title: "Email", isSeparatorNeed: false)
+            Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 0) {
+                MemberDetailFieldRow(text: $member.phone, title: "Phone", isSeparatorNeed: true)
+                MemberDetailFieldRow(text: $member.email, title: "Email", isSeparatorNeed: false)
+            }
         }
         .padding(.horizontal, 18)
         .background(
-            RoundedRectangle(cornerRadius: 30, style: .continuous)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.neutralLightGray)
+        )
+    }
+
+    // MARK: - contactsMemberInfoSection
+    private func personalInfoMemberInfoSection() -> some View {
+        VStack(spacing: 0) {
+            MemberDetailPersonalInfo()
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.neutralLightGray)
+        )
+    }
+
+    // MARK: - addressoMemberInfoSection
+    private func addressMemberInfoSection() -> some View {
+        VStack(spacing: 0) {
+            MemberDetailAddress()
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.neutralLightGray)
+        )
+    }
+    // MARK: - addressoMemberInfoSection
+    private func religiousMemberInfoSection() -> some View {
+        VStack(spacing: 0) {
+            MemberDetailReligiousInfo()
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(Color.neutralLightGray)
         )
     }
@@ -114,13 +153,14 @@ struct AddMemberView: View {
     // MARK: - headerSection
     private func headerSection() -> some View {
         HStack(spacing: 0) {
-            Button(action: {
-                dismiss()
-            }, label: {
-                Image(systemName: "arrow.left")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundColor(.neutralBlack)
-            })
+//            Button(action: {
+//                dismiss()
+//            }, label: {
+//                Image(systemName: "arrow.left")
+//                    .font(.system(size: 15, weight: .semibold))
+//                    .foregroundColor(.neutralBlack)
+//            })
+//            EmptyView()
 
             Spacer(minLength: 0)
 
